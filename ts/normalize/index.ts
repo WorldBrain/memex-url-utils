@@ -7,10 +7,15 @@ import queryParamRules from './query-string-normalization-rules'
 
 export const PROTOCOL_PATTERN = /^\w+:\/\//
 
-function reconstructParsedUrl({ protocol, hostname, pathname, query }: UrlWithParsedQuery) {
+function reconstructParsedUrl({
+    protocol,
+    hostname,
+    pathname,
+    query,
+}: UrlWithParsedQuery) {
     const qs = Object.entries(query).reduce((qs, [query, value], i) => {
         const connector = i === 0 ? '?' : '&'
-        return qs += `${connector}${query}=${value}`
+        return (qs += `${connector}${query}=${value}`)
     }, '')
 
     return `${protocol}//${hostname}${pathname}${qs}`
@@ -54,7 +59,7 @@ export default function normalize(
         normalized = normalizeUrl(url, {
             ...defaultNormalizationOpts,
             ...customOpts,
-        })
+        } as any)
     } catch (err) {
         normalized = url
     }
