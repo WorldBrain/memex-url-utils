@@ -1,5 +1,5 @@
 import { parse as parseUrl, UrlWithParsedQuery } from 'url'
-import normalizeUrl from 'normalize-url'
+import { normalizeUrl } from './utils'
 
 import { defaultNormalizationOpts } from './defaults'
 import { NormalizationOptions } from './types'
