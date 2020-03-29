@@ -1,6 +1,6 @@
 {
   "name": "@worldbrain/memex-url-utils",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Shared URL processing utilities for Memex extension and mobile apps",
   "scripts": {
     "prepare": "tsc",
