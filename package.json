@@ -1,8 +1,9 @@
 {
   "name": "@worldbrain/memex-url-utils",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "description": "Shared URL processing utilities for Memex extension and mobile apps",
   "scripts": {
+    "prepare": "tsc",
     "test": "jest --verbose --config=jest.config.js",
     "test:watch": "jest --watch --config=jest.config.js"
   },
@@ -16,9 +17,10 @@
     "@types/jest": "^24.0.18",
     "@types/node": "^12.7.8",
     "@types/normalize-url": "^4.2.0",
+    "@types/whatwg-url": "^6.4.0",
     "jest": "^24.9.0",
     "ts-jest": "^24.1.0",
-    "typescript": "^3.6.3"
+    "typescript": "^3.8.0"
   },
   "dependencies": {
     "normalize-url": "^4.5.0",
