@@ -11,4 +11,7 @@ cache:
         - ~/.cache/yarn
         - node_modules
 notifications:
-    email: true
+    if: branch = master AND type = push
+    email:
+        on_success: never
+        on_failure: always
