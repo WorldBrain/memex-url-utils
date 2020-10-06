@@ -154,3 +154,7 @@ export function normalizeUrl(urlString: string, options: any) {
 
 	return urlString;
 }
+
+export function isFullUrl(url: string) {
+	return /^https?:\/\//i.test(url);
+}
