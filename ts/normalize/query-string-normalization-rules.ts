@@ -8,6 +8,11 @@ import { NormalizationRule } from './types'
  * May move this to external source at later stage.
  */
 export const rules: { [domain: string]: NormalizationRule } = {
+    // https://developers.google.com/youtube/player_parameters
+    'youtube.com': {
+        rules: ['v'],
+        type: 'keep',
+    },
     'facebook.com': {
         rules: ['fbid', 'q'],
         type: 'keep',
