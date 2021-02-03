@@ -137,6 +137,14 @@ export const rules: { [domain: string]: NormalizationRule } = {
         rules: ['taken-by'],
         type: 'remove',
     },
+    'blogspot.com': {
+        rules: [],
+        type: 'keep',
+    },
+    'substack.com': {
+        rules: [],
+        type: 'keep',
+    },
 }
 
 export default new Map(Object.entries(rules))
