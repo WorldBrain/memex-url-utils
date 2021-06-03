@@ -4,9 +4,18 @@ import { parse as parseUrl } from 'url'
 import normalizeUrl from '../normalize'
 import { URLParts } from './types'
 
-export default function extractUrlParts(url: string): URLParts {
-    let normalized: string
+export class UrlParseError extends Error {
 
+}
+
+export default function extractUrlParts(url: string, options?: {
+    supressParseError: boolean
+}): URLParts {
+    // NOTE: Before making suppressError configurable, it already suppressed errors, so
+    // if we want to make false the default, we should find out what effects it has in
+    // code relying on this behavios
+
+    let normalized: string
     try {
         normalized = normalizeUrl(url, { skipProtocolTrim: true })
     } catch (error) {
@@ -16,7 +25,7 @@ export default function extractUrlParts(url: string): URLParts {
     try {
         const parsed = parseUrl(normalized)
         if (parsed.href == null) {
-            throw new Error('Cannot parse URL')
+            throw new UrlParseError('Cannot parse URL')
         }
 
         return {
@@ -25,6 +34,10 @@ export default function extractUrlParts(url: string): URLParts {
             domain: extractRootDomain(parsed.hostname!),
         }
     } catch (error) {
+        if (!options?.supressParseError ?? true) {
+            throw error
+        }
+
         console.error(`cannot parse URL: ${normalized}`)
         return {
             hostname: normalized,
