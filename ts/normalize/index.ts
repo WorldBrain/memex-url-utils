@@ -5,6 +5,7 @@ import { defaultNormalizationOpts } from './defaults'
 import { NormalizationOptions } from './types'
 import queryParamRules from './query-string-normalization-rules'
 
+export { isFullUrl } from './utils'
 export const PROTOCOL_PATTERN = /^\w+:\/\//
 
 function reconstructParsedUrl({
