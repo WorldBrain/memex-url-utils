@@ -4,6 +4,7 @@
   "description": "Shared URL processing utilities for Memex extension and mobile apps",
   "scripts": {
     "prepare": "tsc",
+    "prepare:watch": "yarn prepare -w",
     "test": "jest --verbose --config=jest.config.js",
     "test:watch": "jest --watch --config=jest.config.js"
   },
@@ -24,6 +25,7 @@
   },
   "dependencies": {
     "normalize-url": "^4.5.0",
-    "url": "^0.11.0"
+    "url": "^0.11.0",
+    "whatwg-url": "^7.0.0"
   }
 }

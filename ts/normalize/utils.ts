@@ -118,7 +118,15 @@ export function normalizeUrl(urlString: string, options: any) {
 
 	// Remove query unwanted parameters
 	if (Array.isArray(options.removeQueryParameters)) {
-		for (const key of [...(urlObj.searchParams as any).keys()]) {
+		let keys: string[] = (urlObj.searchParams as any).keys() ?? [];
+		try {
+			keys = [...keys]
+		} catch (err) {
+			if (err.name !== 'RangeError') {
+				throw err
+			}
+		}
+		for (const key of keys) {
 			if (testParameter(key, options.removeQueryParameters)) {
 				urlObj.searchParams.delete(key);
 			}
