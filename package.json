@@ -2,8 +2,6 @@
   "name": "@worldbrain/memex-url-utils",
   "version": "0.1.1",
   "description": "Shared URL processing utilities for Memex extension and mobile apps",
-  "main": "lib/index.js",
-  "typings": "lib/index",
   "scripts": {
     "prepare": "tsc",
     "test": "jest --verbose --config=jest.config.js",
