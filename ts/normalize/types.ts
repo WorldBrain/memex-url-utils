@@ -10,7 +10,7 @@ export interface NormalizationRule {
 export interface NormalizationOptions extends Options {
     skipQueryRules?: boolean
     skipProtocolTrim?: boolean
-    supressParseError?: boolean
+    suppressParseError?: boolean
 }
 
 export type URLNormalizer = (

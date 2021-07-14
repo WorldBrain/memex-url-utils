@@ -9,9 +9,9 @@ export class UrlParseError extends Error {
 }
 
 export default function extractUrlParts(url: string, options?: {
-    supressParseError: boolean
+    suppressParseErrors: boolean
 }): URLParts {
-    const dontSupressErrors = !(options?.supressParseError ?? true)
+    const dontSupressErrors = !(options?.suppressParseErrors ?? true)
 
     // NOTE: Before making suppressError configurable, it already suppressed errors, so
     // if we want to make false the default, we should find out what effects it has in
@@ -19,7 +19,7 @@ export default function extractUrlParts(url: string, options?: {
 
     let normalized: string
     try {
-        normalized = normalizeUrl(url, { skipProtocolTrim: true, supressParseError: options?.supressParseError })
+        normalized = normalizeUrl(url, { skipProtocolTrim: true, suppressParseError: options?.suppressParseErrors })
     } catch (error) {
         if (dontSupressErrors) {
             throw error

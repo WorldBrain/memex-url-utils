@@ -62,7 +62,7 @@ export default function normalize(
             ...customOpts,
         } as any)
     } catch (err) {
-        if (!(customOpts?.supressParseError ?? true)) {
+        if (!(customOpts?.suppressParseError ?? true)) {
             throw err
         }
         normalized = url
