@@ -120,6 +120,10 @@ export function normalizeUrl(urlString: string, options: any) {
 	if (Array.isArray(options.removeQueryParameters)) {
 		let keys: string[] = (urlObj.searchParams as any).keys() ?? [];
 		try {
+			// Somehow, for some weird reasons, this sometimes fails on Node.js.
+			// Also, the error was orignally swallowed, so it lead to subtle 
+			// normalization differences, which we don't know how many URL
+			// normalizations it already affected before discovering this.
 			keys = [...keys]
 		} catch (err) {
 			if (err.name !== 'RangeError') {
