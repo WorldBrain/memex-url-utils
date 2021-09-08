@@ -168,5 +168,9 @@ export function normalizeUrl(urlString: string, options: any) {
 }
 
 export function isFullUrl(url: string) {
-	return /^https?:\/\//i.test(url);
+	return /^(https?|file):\/\//i.test(url);
+}
+
+export function isFileUrl(url: string) {
+	return url.startsWith('file://')
 }
