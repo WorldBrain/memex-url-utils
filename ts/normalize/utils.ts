@@ -117,7 +117,7 @@ export function normalizeUrl(urlString: string, options: any) {
 	}
 
 	// Remove query unwanted parameters
-	if (Array.isArray(options.removeQueryParameters)) {
+	if (Array.isArray(options.removeQueryParameters) && urlObj.searchParams) {
 		let keys: string[] = (urlObj.searchParams as any).keys() ?? [];
 		try {
 			// Somehow, for some weird reasons, this sometimes fails on Node.js.
@@ -138,7 +138,7 @@ export function normalizeUrl(urlString: string, options: any) {
 	}
 
 	// Sort query parameters
-	if (options.sortQueryParameters) {
+	if (options.sortQueryParameters && urlObj.searchParams) {
 		urlObj.searchParams.sort();
 	}
 
