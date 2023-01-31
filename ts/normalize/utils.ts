@@ -172,5 +172,5 @@ export function isFullUrl(url: string) {
 }
 
 export function isFileUrl(url: string) {
-	return url.startsWith('file://')
+	return url.startsWith('file://') || url.startsWith('blob:')
 }
