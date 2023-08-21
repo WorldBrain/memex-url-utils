@@ -1,176 +1,214 @@
-'use strict';
+'use strict'
 
 import { URL as URLParser } from 'whatwg-url'
 
 const testParameter = (name: string, filters: Array<RegExp | string>) => {
-	return filters.some(filter => filter instanceof RegExp ? filter.test(name) : filter === name);
-};
+    return filters.some((filter) =>
+        filter instanceof RegExp ? filter.test(name) : filter === name,
+    )
+}
 
 export function normalizeUrl(urlString: string, options: any) {
-	options = {
-		defaultProtocol: 'http:',
-		normalizeProtocol: true,
-		forceHttp: false,
-		forceHttps: false,
-		stripAuthentication: true,
-		stripHash: false,
-		stripWWW: true,
-		removeQueryParameters: [/^utm_\w+/i],
-		removeTrailingSlash: true,
-		removeDirectoryIndex: false,
-		sortQueryParameters: true,
-		...options
-	};
+    options = {
+        defaultProtocol: 'http:',
+        normalizeProtocol: true,
+        forceHttp: false,
+        forceHttps: false,
+        stripAuthentication: true,
+        stripHash: false,
+        stripWWW: true,
+        removeQueryParameters: [/^utm_\w+/i],
+        removeTrailingSlash: true,
+        removeDirectoryIndex: false,
+        sortQueryParameters: true,
+        ...options,
+    }
 
-	// TODO: Remove this at some point in the future
-	if (Reflect.has(options, 'normalizeHttps')) {
-		throw new Error('options.normalizeHttps is renamed to options.forceHttp');
-	}
+    // TODO: Remove this at some point in the future
+    if (Reflect.has(options, 'normalizeHttps')) {
+        throw new Error(
+            'options.normalizeHttps is renamed to options.forceHttp',
+        )
+    }
 
-	if (Reflect.has(options, 'normalizeHttp')) {
-		throw new Error('options.normalizeHttp is renamed to options.forceHttps');
-	}
+    if (Reflect.has(options, 'normalizeHttp')) {
+        throw new Error(
+            'options.normalizeHttp is renamed to options.forceHttps',
+        )
+    }
 
-	if (Reflect.has(options, 'stripFragment')) {
-		throw new Error('options.stripFragment is renamed to options.stripHash');
-	}
+    if (Reflect.has(options, 'stripFragment')) {
+        throw new Error('options.stripFragment is renamed to options.stripHash')
+    }
 
-	urlString = urlString.trim();
+    urlString = urlString.trim()
 
-	const hasRelativeProtocol = urlString.startsWith('//');
-	const isRelativeUrl = !hasRelativeProtocol && /^\.*\//.test(urlString);
+    const hasRelativeProtocol = urlString.startsWith('//')
+    const isRelativeUrl = !hasRelativeProtocol && /^\.*\//.test(urlString)
 
-	// Prepend protocol
-	if (!isRelativeUrl) {
-		urlString = urlString.replace(/^(?!(?:\w+:)?\/\/)|^\/\//, options.defaultProtocol);
-	}
+    // Prepend protocol
+    if (!isRelativeUrl) {
+        urlString = urlString.replace(
+            /^(?!(?:\w+:)?\/\/)|^\/\//,
+            options.defaultProtocol,
+        )
+    }
 
-	const urlObj = new URLParser(urlString);
+    const urlObj = new URLParser(urlString)
 
-	if (options.forceHttp && options.forceHttps) {
-		throw new Error('The `forceHttp` and `forceHttps` options cannot be used together');
-	}
+    if (options.forceHttp && options.forceHttps) {
+        throw new Error(
+            'The `forceHttp` and `forceHttps` options cannot be used together',
+        )
+    }
 
-	if (options.forceHttp && urlObj.protocol === 'https:') {
-		urlObj.protocol = 'http:';
-	}
+    if (options.forceHttp && urlObj.protocol === 'https:') {
+        urlObj.protocol = 'http:'
+    }
 
-	if (options.forceHttps && urlObj.protocol === 'http:') {
-		urlObj.protocol = 'https:';
-	}
+    if (options.forceHttps && urlObj.protocol === 'http:') {
+        urlObj.protocol = 'https:'
+    }
 
-	// Remove auth
-	if (options.stripAuthentication) {
-		urlObj.username = '';
-		urlObj.password = '';
-	}
+    // Remove auth
+    if (options.stripAuthentication) {
+        urlObj.username = ''
+        urlObj.password = ''
+    }
 
-	// Remove hash
-	if (options.stripHash) {
-		urlObj.hash = '';
-	}
+    const excludedDomainsForHashStrip = ['web.telegram.org']
 
-	// Remove duplicate slashes if not preceded by a protocol
-	if (urlObj.pathname) {
-		// TODO: Use the following instead when targeting Node.js 10
-		// `urlObj.pathname = urlObj.pathname.replace(/(?<!https?:)\/{2,}/g, '/');`
-		urlObj.pathname = urlObj.pathname.replace(/((?!:).|^)\/{2,}/g, (_, p1) => {
-			if (/^(?!\/)/g.test(p1)) {
-				return `${p1}/`;
-			}
+    // Remove hash
+    if (
+        options.stripHash &&
+        !excludedDomainsForHashStrip.includes(urlObj.hostname)
+    ) {
+        urlObj.hash = ''
+    }
 
-			return '/';
-		});
-	}
+    // Remove duplicate slashes if not preceded by a protocol
+    if (urlObj.pathname) {
+        // TODO: Use the following instead when targeting Node.js 10
+        // `urlObj.pathname = urlObj.pathname.replace(/(?<!https?:)\/{2,}/g, '/');`
+        urlObj.pathname = urlObj.pathname.replace(
+            /((?!:).|^)\/{2,}/g,
+            (_, p1) => {
+                if (/^(?!\/)/g.test(p1)) {
+                    return `${p1}/`
+                }
 
-	// Decode URI octets
-	if (urlObj.pathname) {
-		urlObj.pathname = decodeURI(urlObj.pathname);
-	}
+                return '/'
+            },
+        )
+    }
 
-	// Remove directory index
-	if (options.removeDirectoryIndex === true) {
-		options.removeDirectoryIndex = [/^index\.[a-z]+$/];
-	}
+    // Decode URI octets
+    if (urlObj.pathname) {
+        urlObj.pathname = decodeURI(urlObj.pathname)
+    }
 
-	if (Array.isArray(options.removeDirectoryIndex) && options.removeDirectoryIndex.length > 0) {
-		let pathComponents = urlObj.pathname.split('/');
-		const lastComponent = pathComponents[pathComponents.length - 1];
+    // Remove directory index
+    if (options.removeDirectoryIndex === true) {
+        options.removeDirectoryIndex = [/^index\.[a-z]+$/]
+    }
 
-		if (testParameter(lastComponent, options.removeDirectoryIndex)) {
-			pathComponents = pathComponents.slice(0, pathComponents.length - 1);
-			urlObj.pathname = pathComponents.slice(1).join('/') + '/';
-		}
-	}
+    if (
+        Array.isArray(options.removeDirectoryIndex) &&
+        options.removeDirectoryIndex.length > 0
+    ) {
+        let pathComponents = urlObj.pathname.split('/')
+        const lastComponent = pathComponents[pathComponents.length - 1]
 
-	if (urlObj.hostname) {
-		// Remove trailing dot
-		urlObj.hostname = urlObj.hostname.replace(/\.$/, '');
+        if (testParameter(lastComponent, options.removeDirectoryIndex)) {
+            pathComponents = pathComponents.slice(0, pathComponents.length - 1)
+            urlObj.pathname = pathComponents.slice(1).join('/') + '/'
+        }
+    }
 
-		// Remove `www.`
-		if (options.stripWWW && /^www\.([a-z\-\d]{2,63})\.([a-z.]{2,5})$/.test(urlObj.hostname)) {
-			// Each label should be max 63 at length (min: 2).
-			// The extension should be max 5 at length (min: 2).
-			// Source: https://en.wikipedia.org/wiki/Hostname#Restrictions_on_valid_host_names
-			urlObj.hostname = urlObj.hostname.replace(/^www\./, '');
-		}
-	}
+    if (urlObj.hostname) {
+        // Remove trailing dot
+        urlObj.hostname = urlObj.hostname.replace(/\.$/, '')
 
-	// Remove query unwanted parameters
-	if (Array.isArray(options.removeQueryParameters) && urlObj.searchParams) {
-		let keys: string[] = (urlObj.searchParams as any).keys() ?? [];
-		try {
-			// Somehow, for some weird reasons, this sometimes fails on Node.js.
-			// Also, the error was orignally swallowed, so it lead to subtle 
-			// normalization differences, which we don't know how many URL
-			// normalizations it already affected before discovering this.
-			keys = [...keys]
-		} catch (err) {
-			if (err.name !== 'RangeError') {
-				throw err
-			}
-		}
-		for (const key of keys) {
-			if (testParameter(key, options.removeQueryParameters)) {
-				urlObj.searchParams.delete(key);
-			}
-		}
-	}
+        // Remove `www.`
+        if (
+            options.stripWWW &&
+            /^www\.([a-z\-\d]{2,63})\.([a-z.]{2,5})$/.test(urlObj.hostname)
+        ) {
+            // Each label should be max 63 at length (min: 2).
+            // The extension should be max 5 at length (min: 2).
+            // Source: https://en.wikipedia.org/wiki/Hostname#Restrictions_on_valid_host_names
+            urlObj.hostname = urlObj.hostname.replace(/^www\./, '')
+        }
+    }
 
-	// Sort query parameters
-	if (options.sortQueryParameters && urlObj.searchParams) {
-		urlObj.searchParams.sort();
-	}
+    // Remove query unwanted parameters
+    if (Array.isArray(options.removeQueryParameters) && urlObj.searchParams) {
+        let keys: string[] = (urlObj.searchParams as any).keys() ?? []
+        try {
+            // Somehow, for some weird reasons, this sometimes fails on Node.js.
+            // Also, the error was orignally swallowed, so it lead to subtle
+            // normalization differences, which we don't know how many URL
+            // normalizations it already affected before discovering this.
+            keys = [...keys]
+        } catch (err) {
+            if (err.name !== 'RangeError') {
+                throw err
+            }
+        }
+        for (const key of keys) {
+            if (testParameter(key, options.removeQueryParameters)) {
+                urlObj.searchParams.delete(key)
+            }
+        }
+    }
 
-	if (options.removeTrailingSlash) {
-		urlObj.pathname = urlObj.pathname.replace(/\/$/, '');
-	}
+    // Sort query parameters
+    if (options.sortQueryParameters && urlObj.searchParams) {
+        urlObj.searchParams.sort()
+    }
 
-	// Take advantage of many of the Node `url` normalizations
-	urlString = urlObj.toString();
+    if (options.removeTrailingSlash) {
+        urlObj.pathname = urlObj.pathname.replace(/\/$/, '')
+    }
 
-	// Remove ending `/`
-	if ((options.removeTrailingSlash || urlObj.pathname === '/') && urlObj.hash === '') {
-		urlString = urlString.replace(/\/$/, '');
-	}
+    // Take advantage of many of the Node `url` normalizations
+    urlString = urlObj.toString()
 
-	// Restore relative protocol, if applicable
-	if (hasRelativeProtocol && !options.normalizeProtocol) {
-		urlString = urlString.replace(/^http:\/\//, '//');
-	}
+    // Remove ending `/`
+    if (
+        (options.removeTrailingSlash || urlObj.pathname === '/') &&
+        urlObj.hash === ''
+    ) {
+        urlString = urlString.replace(/\/$/, '')
+    }
 
-	// Remove http/https
-	if (options.stripProtocol) {
-		urlString = urlString.replace(/^(?:https?:)?\/\//, '');
-	}
+    // Restore relative protocol, if applicable
+    if (hasRelativeProtocol && !options.normalizeProtocol) {
+        urlString = urlString.replace(/^http:\/\//, '//')
+    }
 
-	return urlString;
+    // Remove http/https
+    if (options.stripProtocol) {
+        urlString = urlString.replace(/^(?:https?:)?\/\//, '')
+    }
+
+    // transform youtube short URLs
+    if (urlString.startsWith('youtu.be/')) {
+        urlString = urlString.replace('youtu.be/', 'youtube.com/watch?v=')
+    }
+
+    // transform telegram urls
+    if (urlString.includes('web.telegram.org/')) {
+        urlString = urlString.replace('#@', '?user=')
+    }
+
+    return urlString
 }
 
 export function isFullUrl(url: string) {
-	return /^(https?|file):\/\//i.test(url);
+    return /^(https?|file):\/\//i.test(url)
 }
 
 export function isFileUrl(url: string) {
-	return url.startsWith('file://') || url.startsWith('blob:')
+    return url.startsWith('file://') || url.startsWith('blob:')
 }
