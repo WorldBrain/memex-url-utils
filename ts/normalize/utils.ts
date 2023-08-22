@@ -9,6 +9,7 @@ const testParameter = (name: string, filters: Array<RegExp | string>) => {
 }
 
 export function normalizeUrl(urlString: string, options: any) {
+    console.log('useOldNormalizeUrl')
     options = {
         defaultProtocol: 'http:',
         normalizeProtocol: true,
