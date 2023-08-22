@@ -1,5 +1,7 @@
 'use strict'
 
+/// THIS IS THE OLD NORMALIZATION FILE, DO NOT USE
+
 import { URL as URLParser } from 'whatwg-url'
 
 const testParameter = (name: string, filters: Array<RegExp | string>) => {
