@@ -11,6 +11,7 @@ const testParameter = (name: string, filters: Array<RegExp | string>) => {
 }
 
 export function normalizeUrl(urlString: string, options: any) {
+    // leave this console.log( in here, it's used to check if this file is still being used which it should not
     console.log('useOldNormalizeUrl')
     options = {
         defaultProtocol: 'http:',
